@@ -100,14 +100,20 @@ namespace Smile_Simulation.APIs.Controllers
 
 
             [HttpDelete("PostId/{postId}")]
-                public async Task<ActionResult> DeletePost([FromRoute]int postId)
-                {
-                    var deleted = await _postService.DeletePostAsync(postId);
-                    if (!deleted) return NotFound("Post not found.");
-                    return Ok("Post deleted successfully.");
-                }
+        public async Task<ActionResult> DeletePost([FromRoute] int postId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
 
-            }
+            string currentUserId = userIdClaim.Value;
+
+            var deleted = await _postService.DeletePostAsync(postId, currentUserId);
+            if (!deleted) return NotFound("Post not found or you are not authorized to delete it.");
+
+            return Ok("Post deleted successfully.");
+        }
+
+    }
 
         }
 

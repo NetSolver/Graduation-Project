@@ -99,11 +99,11 @@ namespace Smile_Simulation.Application.Services
         }
 
 
-        public async Task<bool> DeletePostAsync(int postId)
+        public async Task<bool> DeletePostAsync(int postId, string currentUserId)
         {
             var post = await _postRepository.GetByIdAsync(postId);
             if (post == null) return false;
-
+            if (post.PublisherId != currentUserId) return false;
             _postRepository.DeleteAsync(postId);
             return true;
         }
